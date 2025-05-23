@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Time Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+    header {
+      background-color: #d8b4f8;
+      padding: 20px;
+      text-align: center;
+      color: #333;
+      font-size: 1.5em;
+    }
+    main {
+      max-width: 800px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .row label {
+      width: 30px;
+    }
+    .row input {
+      width: 80px;
+      margin-right: 10px;
+      padding: 5px;
+      -moz-appearance: textfield;
+    }
+    .row input::-webkit-outer-spin-button,
+    .row input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .row button {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+    .actions button {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 10px 15px;
+      background-color: #8e44ad;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .results {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Add Hours, Minutes, and Seconds
+  </header>
+  <main>
+    <div id="timeContainer"></div>
+    <div class="actions">
+      <button onclick="addRow()">Add Row</button>
+      <button onclick="addTenRows()">Add 10 Rows</button>
+      <button onclick="calculateTotal()">Calculate</button>
+      <button onclick="clearAllRows()">Clear</button>
+    </div>
+    <div class="results" id="result"></div>
+  </main>
+  <script>
+    const container = document.getElementById('timeContainer');
+    let rowCount = 0;
+
+    function addRow(hours = '', minutes = '', seconds = '') {
+      rowCount++;
+      const div = document.createElement('div');
+      div.className = 'row';
+      div.innerHTML = `
+        <label>${rowCount}.</label>
+        <input type="text" placeholder="Hours" value="${hours}" />
+        <input type="text" placeholder="Minutes" value="${minutes}" />
+        <input type="text" placeholder="Seconds" value="${seconds}" />
+        <button onclick="this.parentElement.remove(); updateRowNumbers();">X</button>
+      `;
+      container.appendChild(div);
+    }
+
+    function addTenRows() {
+      for (let i = 0; i < 10; i++) {
+        addRow();
+      }
+    }
+
+    function clearAllRows() {
+      document.getElementById('timeContainer').innerHTML = '';
+      rowCount = 0;
+    }
+
+    function updateRowNumbers() {
+      rowCount = 0;
+      document.querySelectorAll('#timeContainer .row').forEach((row, index) => {
+        row.querySelector('label').textContent = `${index + 1}.`;
+        rowCount++;
+      });
+    }
+
+    function calculateTotal() {
+      let totalSeconds = 0;
+      document.querySelectorAll('.row').forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        const h = parseFloat(inputs[0].value) || 0;
+        const m = parseFloat(inputs[1].value) || 0;
+        const s = parseFloat(inputs[2].value) || 0;
+        totalSeconds += h * 3600 + m * 60 + s;
+      });
+
+      const totalHours = Math.floor(totalSeconds / 3600);
+      const remainingMinutes = Math.floor((totalSeconds % 3600) / 60);
+      const remainingSeconds = totalSeconds % 60;
+
+      document.getElementById('result').innerText =
+        `Total: ${totalHours} hours, ${remainingMinutes} minutes, ${remainingSeconds} seconds`;
+    }
+
+    // Initial row
+    addRow();
+  </script>
+</body>
+</html>
